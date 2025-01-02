@@ -58,6 +58,25 @@ CONFLUX_ESPACE_RPC_URL=https://evm.confluxrpc.com
 # Required for Core Space operations
 CONFLUX_CORE_PRIVATE_KEY=your_private_key
 CONFLUX_CORE_RPC_URL=https://main.confluxrpc.com
+
+# Choose an API provder and add the API_KEY on the env file (Choose one and configure it on the character file as well, openai is default)
+OPENAI_API_KEY=                 # OpenAI API key, starting with sk-
+ANTHROPIC_API_KEY=              # For Claude
+
+# You can add additional clients by adding the env variables and including them in the character file like ["dicord","telegram"].
+# Discord Configuration
+DISCORD_APPLICATION_ID=
+DISCORD_API_TOKEN=              # Bot token
+
+# Telegram Configuration
+TELEGRAM_BOT_TOKEN=
+
+# Twitter/X Configuration
+TWITTER_DRY_RUN=false
+TWITTER_USERNAME=               # Account username
+TWITTER_PASSWORD=               # Account password
+TWITTER_EMAIL=                  # Account email
+
 ```
 
 ### Running the Agent
