@@ -28,8 +28,8 @@ A complete starter template for building Eliza agents with Conflux blockchain in
 
 ### Prerequisites
 
-- Node.js 18+ (recommended: 20+)
-- pnpm
+- Node.js 23+
+- pnpm 9+
 - Git
 
 ### Installation
