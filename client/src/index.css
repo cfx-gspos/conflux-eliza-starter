@@ -1,0 +1,139 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+    /* Conflux brand colors */
+    --conflux-dark: #1a1b26;
+    --conflux-blue: #3b82f6;
+    --conflux-blue-light: #60a5fa;
+    --conflux-accent: #38bdf8;
+    --conflux-text: #f8fafc;
+    --conflux-text-secondary: #94a3b8;
+    --conflux-border: #2d3748;
+}
+
+body {
+    background-color: var(--conflux-dark);
+    color: var(--conflux-text);
+}
+
+.chat-container {
+    background-color: var(--conflux-dark);
+    border: 1px solid var(--conflux-border);
+}
+
+.message {
+    border: 1px solid var(--conflux-border);
+    background-color: rgba(59, 130, 246, 0.05);
+}
+
+.message.user {
+    background-color: rgba(59, 130, 246, 0.1);
+}
+
+.message.assistant {
+    background-color: rgba(56, 189, 248, 0.05);
+}
+
+.input-container {
+    border-top: 1px solid var(--conflux-border);
+}
+
+input[type="text"],
+textarea {
+    background-color: rgba(59, 130, 246, 0.05);
+    border: 1px solid var(--conflux-border);
+    color: var(--conflux-text);
+}
+
+input[type="text"]:focus,
+textarea:focus {
+    border-color: var(--conflux-blue);
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+
+button {
+    background-color: var(--conflux-blue);
+    color: white;
+    transition: all 0.2s;
+}
+
+button:hover {
+    background-color: var(--conflux-blue-light);
+}
+
+button:disabled {
+    background-color: var(--conflux-text-secondary);
+    opacity: 0.5;
+}
+
+/* Navigation and header styles */
+nav {
+    background-color: var(--conflux-dark);
+    border-bottom: 1px solid var(--conflux-border);
+}
+
+.nav-link {
+    color: var(--conflux-text-secondary);
+}
+
+.nav-link:hover,
+.nav-link.active {
+    color: var(--conflux-blue);
+}
+
+/* Card and container styles */
+.card {
+    background-color: rgba(59, 130, 246, 0.05);
+    border: 1px solid var(--conflux-border);
+}
+
+.card:hover {
+    border-color: var(--conflux-blue);
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--conflux-dark);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--conflux-border);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--conflux-blue);
+}
+
+/* Code block styling */
+pre {
+    background-color: rgba(59, 130, 246, 0.05) !important;
+    border: 1px solid var(--conflux-border) !important;
+}
+
+code {
+    color: var(--conflux-accent) !important;
+}
+
+/* Loading states */
+.loading {
+    color: var(--conflux-blue);
+}
+
+.spinner {
+    border-color: var(--conflux-blue);
+}
+
+/* Error states */
+.error {
+    color: #ef4444;
+    background-color: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+}

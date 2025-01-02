@@ -1,0 +1,81 @@
+#root {
+    width: 100%;
+    margin: 0 auto;
+    text-align: center;
+    min-height: 100vh;
+    background-color: var(--conflux-dark);
+    color: var(--conflux-text);
+}
+
+.logo {
+    height: 6em;
+    padding: 1.5em;
+    will-change: filter;
+    transition: filter 300ms;
+}
+
+.logo:hover {
+    filter: drop-shadow(0 0 2em var(--conflux-blue));
+}
+
+.card {
+    padding: 2em;
+    background-color: rgba(59, 130, 246, 0.05);
+    border: 1px solid var(--conflux-border);
+    border-radius: 8px;
+}
+
+.read-the-docs {
+    color: var(--conflux-text-secondary);
+}
+
+/* Animation for loading states */
+@keyframes logo-spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .logo.spin {
+        animation: logo-spin infinite 20s linear;
+    }
+}
+
+/* Layout styles */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+
+/* Link styles */
+a {
+    color: var(--conflux-blue);
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+a:hover {
+    color: var(--conflux-blue-light);
+}
+
+/* Button styles */
+button {
+    border-radius: 8px;
+    padding: 0.6em 1.2em;
+    font-size: 1em;
+    font-weight: 500;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.25s;
+}
+
+button:focus,
+button:focus-visible {
+    outline: 4px auto -webkit-focus-ring-color;
+    outline-color: var(--conflux-blue);
+}
