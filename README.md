@@ -64,11 +64,34 @@ CONFLUX_CORE_RPC_URL=https://main.confluxrpc.com
 
 ```bash
 # Start the agent
-pnpm start
+pnpm start --characters="characters\conflux-dev.character.json"
 
 # In a new terminal, start the client
-pnpm start:client
+cd client
+pnpm run dev
 ```
+
+## 💡 Supported Operations
+
+### Token Operations
+
+- Native CFX transfers (Core and eSpace)
+- ERC-20 token transfers (USDT, ETH, BTC, USDC) (eSpace only)
+- Cross-space bridging (Core to eSpace)
+- Token swaps via Swappi DEX (eSpace only)
+
+### Network Support
+
+- Conflux Core Space
+- Conflux eSpace
+- Cross-space operations
+
+### Supported Tokens (eSpace only)
+
+- CFX (Native token)
+- USDT
+- ETH
+- BTC
 
 ## 🧪 Test Commands
 
@@ -123,31 +146,8 @@ Send 0.00001 USDT to 0x092618c68f6A87615b02484adE2BC92D7716AB15 on eSpace
 ```
 
 ```
-Send 0.000001 BTC to 0x092618c68f6A87615b02484adE2BC92D7716AB15 on eSpace
+Send 0.0000000001 BTC to 0x092618c68f6A87615b02484adE2BC92D7716AB15 on eSpace
 ```
-
-## 💡 Supported Operations
-
-### Token Operations
-
-- Native CFX transfers (Core and eSpace)
-- ERC-20 token transfers (USDT, ETH, BTC, USDC) (eSpace only)
-- Cross-space bridging (Core to eSpace)
-- Token swaps via Swappi DEX (eSpace only)
-
-### Network Support
-
-- Conflux Core Space
-- Conflux eSpace
-- Cross-space operations
-
-### Supported Tokens (eSpace only)
-
-- CFX (Native token)
-- USDT
-- ETH
-- BTC
-- USDC
 
 ## 🔍 Important Notes
 
