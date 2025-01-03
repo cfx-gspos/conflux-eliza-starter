@@ -82,6 +82,9 @@ TWITTER_EMAIL=                  # Account email
 ### Running the Agent
 
 ```bash
+# Build the Agent
+pnpm build
+
 # Start the agent
 pnpm start --characters="characters\conflux-dev.character.json"
 
