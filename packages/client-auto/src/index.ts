@@ -25,24 +25,44 @@ export class AutoClient {
             throw error;
         }
     }
-
+    private async   getPiPrice(): Promise<number> {
+        try {
+          const response = await fetch('https://api.dexscreener.com/latest/dex/tokens/0x107df63daecfec2ff5174a7096e0fceb1ec2370b');
+          const data = await response.json();
+          if (data.pairs && data.pairs[0] && data.pairs[0].priceNative) {
+            return parseFloat(data.pairs[0].priceNative);
+          }
+          throw new Error('Unable to fetch PI price');
+        } catch (error) {
+          console.error('Error fetching PI price:', error);
+          return 0.0007; // Fallback price if API fails
+        }
+      }
     private async initAutoClient() {
         try {
             const agentId = await this.getAgentId();
-
+            const memePrice = await this.getPiPrice();
+            const settings = Object.fromEntries(
+                Object.entries(process.env).filter(([key]) =>
+                    key.startsWith("CONFLUX_")
+                )
+            );
+            const min=parseFloat(settings.CONFLUX_MEME_TRANSACTION_CFX_MIN)
+            const max=parseFloat(settings.CONFLUX_MEME_TRANSACTION_CFX_MAX)
+            const range=max-min
             // Generate random transaction amount
             const getRandomAmount = (isSellingCFX: boolean) => {
                 if (isSellingCFX) {
                     // CFX for PI: 0.1-0.5
-                    return (Math.random() * 0.4 + 0.1).toFixed(4);
+                    return (Math.random() * range + min).toFixed(4);
                 } else {
                     // PI for CFX: 1-5
-                    return (Math.random() * 4 + 1).toFixed(4);
+                    return ((Math.random() * range + min)/memePrice).toFixed(4);
                 }
             }
 
             // Run once per minute
-            this.interval = setTimeout(
+            this.interval = setInterval(
                 async () => {
                     elizaLogger.log("running auto client...");
                     try {
@@ -73,7 +93,7 @@ export class AutoClient {
                         elizaLogger.error('Error sending message:', error);
                     }
                 },
-                1 * 1000
+                60 * 1000
             );
         } catch (error) {
             elizaLogger.error('Failed to initialize auto client:', error);
