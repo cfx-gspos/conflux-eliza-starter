@@ -14,8 +14,8 @@ export const models: Models = {
         },
         model: {
             [ModelClass.SMALL]: settings.SMALL_OPENAI_MODEL || "gpt-4o-mini",
-            [ModelClass.MEDIUM]: settings.MEDIUM_OPENAI_MODEL || "gpt-4o",
-            [ModelClass.LARGE]: settings.LARGE_OPENAI_MODEL || "gpt-4o",
+            [ModelClass.MEDIUM]: settings.MEDIUM_OPENAI_MODEL || "gpt-4o-mini",
+            [ModelClass.LARGE]: settings.LARGE_OPENAI_MODEL || "gpt-4o-mini",
             [ModelClass.EMBEDDING]: settings.EMBEDDING_OPENAI_MODEL || "text-embedding-3-small",
             [ModelClass.IMAGE]: settings.IMAGE_OPENAI_MODEL || "dall-e-3",
         },

@@ -80,7 +80,7 @@ export const bridgeTransfer: Action = {
             {
                 user: "{{user1}}",
                 content: {
-                    text: "Send 1 CFX to eSpace Address 0x119DA8bbe74B1C5c987D0c64D10eC1dB301d4752",
+                    text: "Send 1 CFX to eSpace Address 0x119DA8bbe74B1C5c987D0c64D10eC1dB301d4752 via bridge",
                 },
             },
             {
