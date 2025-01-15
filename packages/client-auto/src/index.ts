@@ -3,10 +3,16 @@ import { Client, IAgentRuntime, elizaLogger } from "@elizaos/core";
 export class AutoClient {
     interval: NodeJS.Timeout;
     runtime: IAgentRuntime;
+    settings:any ;
 
     constructor(runtime: IAgentRuntime) {
         this.runtime = runtime;
         this.initAutoClient();
+        this.settings = Object.fromEntries(
+            Object.entries(process.env).filter(([key]) =>
+                key.startsWith("CONFLUX_")
+            )
+        );
     }
 
     private async getAgentId(): Promise<string> {
@@ -27,7 +33,8 @@ export class AutoClient {
     }
     private async   getPiPrice(): Promise<number> {
         try {
-          const response = await fetch('https://api.dexscreener.com/latest/dex/tokens/0x107df63daecfec2ff5174a7096e0fceb1ec2370b');
+
+          const response = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${this.settings.CONFLUX_MEME_COIN}`);
           const data = await response.json();
           if (data.pairs && data.pairs[0] && data.pairs[0].priceNative) {
             return parseFloat(data.pairs[0].priceNative);
@@ -42,13 +49,9 @@ export class AutoClient {
         try {
             const agentId = await this.getAgentId();
             const memePrice = await this.getPiPrice();
-            const settings = Object.fromEntries(
-                Object.entries(process.env).filter(([key]) =>
-                    key.startsWith("CONFLUX_")
-                )
-            );
-            const min=parseFloat(settings.CONFLUX_MEME_TRANSACTION_CFX_MIN)
-            const max=parseFloat(settings.CONFLUX_MEME_TRANSACTION_CFX_MAX)
+
+            const min=parseFloat(this.settings.CONFLUX_MEME_TRANSACTION_CFX_MIN)
+            const max=parseFloat(this.settings.CONFLUX_MEME_TRANSACTION_CFX_MAX)
             const range=max-min
             // Generate random transaction amount
             const getRandomAmount = (isSellingCFX: boolean) => {

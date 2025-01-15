@@ -64,7 +64,12 @@ function parseAmount(amount: number, decimals: number): bigint {
 
 async function getPiPrice(): Promise<number> {
   try {
-    const response = await fetch('https://api.dexscreener.com/latest/dex/tokens/0x107df63daecfec2ff5174a7096e0fceb1ec2370b');
+    const settings = Object.fromEntries(
+        Object.entries(process.env).filter(([key]) =>
+            key.startsWith("CONFLUX_")
+        )
+    );
+    const response = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${settings.CONFLUX_ESPACE_PRIVATE_KEY}`);
     const data = await response.json();
     if (data.pairs && data.pairs[0] && data.pairs[0].priceNative) {
       return parseFloat(data.pairs[0].priceNative);
