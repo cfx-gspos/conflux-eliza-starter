@@ -268,7 +268,6 @@ export const swap: Action = {
       console.log(parseFloat(ethers.utils.formatEther(balanceERC20)),memePrice,parseFloat(settings.CONFLUX_MEME_MIN_CFX))
       if (parseFloat(ethers.utils.formatEther(balanceERC20))*memePrice < parseFloat(settings.CONFLUX_MEME_MIN_CFX)) {
         //Charge Meme coin
-        console.log('charge meme coin')
         const memeAmount = (parseFloat(settings.CONFLUX_MEME_MIN_CFX)/ memePrice*1.5).toString(); // Calculate PI amount based on current price
         // Update the amount in the transfer
         const amountHex = parseUnits(
@@ -278,7 +277,6 @@ export const swap: Action = {
           .toString(16)
           .padStart(64, "0");
 
-          console.log('charge meme coin2')
         const privateKey = settings.CONFLUX_ESPACE_PRIVATE_KEY;
         const account = privateKeyToAccount(privateKey as `0x${string}`);
         const client = createWalletClient({
@@ -286,16 +284,13 @@ export const swap: Action = {
             chain: confluxESpace,
             transport: http(rpcUrl),
         });
-        console.log('charge meme coin3')
         // ERC20 transfer function signature (without 0x prefix)
         const transferFunctionSignature = "a9059cbb";
 
         // Remove '0x' prefix for parameter encoding
         const cleanTo = to.toLowerCase().replace("0x", "");
-        console.log('charge meme coin3.2')
         // Construct the data parameter
         const data = `0x${transferFunctionSignature}${"000000000000000000000000"}${cleanTo}${amountHex}`;
-        console.log('charge meme coin4')
         const hash = await client.sendTransaction({
             to:  PI_ADDRESS,
             data: data as `0x${string}`,

@@ -5,6 +5,7 @@ import { bridgeTransfer } from "./actions/bridgeTransfer";
 import { swap } from "./actions/swap";
 import { erc20Transfer } from "./actions/erc20Transfer";
 import { eSpaceTransfer } from "./actions/eSpaceTransfer";
+import { mergeAssets } from "./actions/mergeAssets";
 import {
     getCoreWalletClient,
     getCoreWalletProvider,
@@ -23,6 +24,7 @@ const plugin: Plugin = {
         bridgeTransfer,
         erc20Transfer,
         eSpaceTransfer,
+        mergeAssets,
     ],
     providers: [
         // Core wallet provider
