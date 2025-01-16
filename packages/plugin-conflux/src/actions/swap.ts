@@ -313,13 +313,7 @@ export const swap: Action = {
       console.log(path, to, deadline, amountIn);
       // Estimate gas for the swap
       const gasLimit: BigNumber = BigNumber.from("837345");
-      // await router.estimateGas.swapExactETHForTokens(
-      //     0, // We'll calculate this after getting amounts
-      //     path,
-      //     to,
-      //     deadline,
-      //     { value: amountIn }
-      // );
+
       console.log("Estimated gas:", gasLimit.toString());
 
       // Calculate total cost (swap amount + gas)
@@ -327,12 +321,7 @@ export const swap: Action = {
       const totalCost = amountIn + gasCost.toBigInt();
       console.log("Total cost:", ethers.utils.formatEther(totalCost));
 
-      // if (balance.toBigInt() < totalCost) {
-      //     throw new Error(
-      //         `Insufficient balance. Need ${ethers.utils.formatEther(totalCost)} CFX but have ${ethers.utils.formatEther(balance)} CFX`
-      //     );
-      // }
-
+ 
       console.log("Getting amounts out for path:", path);
       const amounts = await router.getAmountsOut(amountIn, path);
       console.log("Amounts out:", amounts);
