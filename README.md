@@ -1,28 +1,15 @@
-# Conflux Eliza Starter 🤖
+# Conflux Eliza Auto Trading Agent 🤖
 
-A complete starter template for building Eliza agents with Conflux blockchain integration. This template includes all standard Eliza plugins plus specialized Conflux functionality.
+This auto trading agent aims to increase transaction depth and activity for meme coins on Conflux eSpace. Many popular coins currently have low daily trading volumes (often below $10). This tool helps automate and enhance trading frequency.
 
 ## ✨ Features
 
 ### Core Features
 
-- 🤖 Natural language processing
-- 🎨 Image generation and description
-- 📝 Text generation and analysis
-- 🗣️ Speech synthesis and recognition
-- 📊 Data visualization
-- 🌐 Web browsing capabilities
-- 📁 File handling and automation
-- ☁️ Cloud storage integration
-
-### Conflux Features
-
-- 💰 Wallet management (Core Space and eSpace)
-- 💸 Token transfers (CFX, USDT, etc.)
-- 🌉 Cross-space bridging
-- 💱 Token swapping via Swappi DEX
-- 📊 Price and market data
-- 🔍 Transaction tracking
+- Natural language processing
+- Automatic execution
+- Automatic distribution of meme coins/CFX to sub-accounts
+- Automatic merging of meme coins/CFX back to main account
 
 ## 🚀 Quick Start
 
@@ -36,7 +23,7 @@ A complete starter template for building Eliza agents with Conflux blockchain in
 
 ```bash
 # Clone the repository
-git clone https://github.com/0xn1c0/conflux-eliza-starter
+git clone https://github.com/cfx-gspos/conflux-eliza-starter.git
 cd conflux-eliza-starter
 
 # Install dependencies
@@ -48,34 +35,21 @@ cp .env.example .env
 
 ### Configuration
 
-Edit `.env` file and add your credentials:
+Edit the `.env` file with your credentials:
 
 ```env
-# Required for eSpace operations
-CONFLUX_ESPACE_PRIVATE_KEY=your_private_key
+# Conflux Configuration
+CONFLUX_ESPACE_PRIVATE_KEY=
+CONFLUX_ESPACE_PRIVATE_KEY_LIST_NUMBER=30
+CONFLUX_MEME_COIN=0x107df63daecfec2ff5174a7096e0fceb1ec2370b
+CONFLUX_MEME_TRANSACTION_DELAY_MIN=3
+CONFLUX_MEME_TRANSACTION_DELAY_MAX=7
+
+CONFLUX_MEME_CHARGE_CFX=30
+CONFLUX_MEME_TRANSACTION_CFX_MIN=20
+CONFLUX_MEME_TRANSACTION_CFX_MAX=40
 CONFLUX_ESPACE_RPC_URL=https://evm.confluxrpc.com
 
-# Required for Core Space operations
-CONFLUX_CORE_PRIVATE_KEY=your_private_key
-CONFLUX_CORE_RPC_URL=https://main.confluxrpc.com
-
-# Choose an API provder and add the API_KEY on the env file (Choose one and configure it on the character file as well, openai is default)
-OPENAI_API_KEY=                 # OpenAI API key, starting with sk-
-ANTHROPIC_API_KEY=              # For Claude
-
-# You can add additional clients by adding the env variables and including them in the character file like ["dicord","telegram"].
-# Discord Configuration
-DISCORD_APPLICATION_ID=
-DISCORD_API_TOKEN=              # Bot token
-
-# Telegram Configuration
-TELEGRAM_BOT_TOKEN=
-
-# Twitter/X Configuration
-TWITTER_DRY_RUN=false
-TWITTER_USERNAME=               # Account username
-TWITTER_PASSWORD=               # Account password
-TWITTER_EMAIL=                  # Account email
 
 ```
 
@@ -86,145 +60,27 @@ TWITTER_EMAIL=                  # Account email
 pnpm build
 
 # Start the agent
-pnpm start --characters="characters\conflux-dev.character.json"
+pnpm start --characters="characters\cfx36u.character.json"
 
 # In a new terminal, start the client
-cd client
-pnpm run dev
-```
-
-## 💡 Supported Operations
-
-### Token Operations
-
-- Native CFX transfers (Core and eSpace)
-- ERC-20 token transfers (USDT, ETH, BTC, USDC) (eSpace only)
-- Cross-space bridging (Core to eSpace)
-- Token swaps via Swappi DEX (eSpace only)
-
-### Network Support
-
-- Conflux Core Space
-- Conflux eSpace
-- Cross-space operations
-
-### Supported Tokens (eSpace only)
-
-- CFX (Native token)
-- USDT
-- ETH
-- BTC
-
-## 🧪 Test Commands
-
-Test the agent's capabilities with these example prompts:
-
-### Network Information
+pnpm start:client
 
 ```
-What is Conflux Network?
-```
+ 
+# Core Concepts
 
-### Wallet Operations
+To set up auto trading for a meme coin (e.g., https://confipump.fun/tokens/0x107df63daecfec2ff5174a7096e0fceb1ec2370b), configure the following parameters in your `.env` file:
 
-```
-Show me my Conflux Core wallet address and balance
-```
+1. `CONFLUX_ESPACE_PRIVATE_KEY`: The main account key. Transfer both CFX and an equivalent value of meme coins to this account.
 
-```
-Show me my Conflux eSpace wallet address and balance
-```
+2. `CONFLUX_ESPACE_PRIVATE_KEY_LIST_NUMBER`: Number of sub-accounts participating in trading (recommended: 30).
 
-### CFX Transfers
+3. `CONFLUX_MEME_COIN`: The meme coin contract address (obtained from confipump.fun after creation).
 
-```
-Send 0.0001 CFX to cfx:aan8atk01e3bprs411w2gy06c2frefyb4uy3bjm8zc on Core Space
-```
+4. `CONFLUX_MEME_TRANSACTION_DELAY_MIN/MAX`: Trading frequency settings (e.g., 3~7 means each trade executes after 3-7 minutes).
 
-```
-Send 0.001 CFX to 0x092618c68f6A87615b02484adE2BC92D7716AB15 on eSpace
-```
+5. `CONFLUX_MEME_CHARGE_CFX`: The threshold for sub-account refills. For example, if a sub-account needs to swap 27.5 CFX but only has 20 CFX, the main account will transfer `CONFLUX_MEME_CHARGE_CFX * 1.2` CFX to enable the transaction.
 
-### Cross-Space Bridge
+6. `CONFLUX_MEME_TRANSACTION_CFX_MIN/MAX`: Transaction amount range for each swap (e.g., 20~40 means each transaction will swap a random amount between 20-40 CFX worth of tokens).
 
-```
-Bridge 0.00001 cfx from Conflux Core to Conflux eSpace to 0x092618c68f6A87615b02484adE2BC92D7716AB15
-```
-
-### Token Swaps
-
-```
-swap 0.001 CFX for USDT on Swappi DEX (eSpace)
-```
-
-```
-swap 0.001 CFX for BTC on Swappi DEX (eSpace)
-```
-
-### Token Transfers
-
-```
-Send 0.00001 USDT to 0x092618c68f6A87615b02484adE2BC92D7716AB15 on eSpace
-```
-
-```
-Send 0.0000000001 BTC to 0x092618c68f6A87615b02484adE2BC92D7716AB15 on eSpace
-```
-
-## 🔍 Important Notes
-
-### Address Formats
-
-- eSpace: Use `0x` addresses
-- Core Space: Use `cfx:` addresses
-- For bridging:
-    - Core to eSpace: destination must be `0x` address
-    - eSpace to Core: destination must be `cfx:` address
-
-### Transaction Tips
-
-- Always include enough CFX for gas fees
-- Bridge operations may take a few minutes
-- Swaps have a default 0.5% slippage tolerance
-
-## 🛠️ Development
-
-### Project Structure
-
-```
-packages/
-  ├── core/                 # Eliza core functionality
-  ├── plugin-conflux/       # Conflux integration
-  │   ├── src/
-  │   │   ├── actions/      # Blockchain operations
-  │   │   ├── providers/    # Wallet providers
-  │   │   ├── templates/    # Template functions
-  │   │   ├── types/        # TypeScript definitions
-  │   │   └── utils/        # Helper functions
-  └── client/               # Web interface
-```
-
-### Adding New Features
-
-1. Create new actions in `packages/plugin-conflux/src/actions/`
-2. Register them in `packages/plugin-conflux/src/index.ts`
-3. Add types in `packages/plugin-conflux/src/types/`
-4. Update tests in `packages/plugin-conflux/tests/`
-
-## 📚 Resources
-
-- [Eliza Documentation](https://elizaos.github.io/eliza/)
-- [Conflux Documentation](https://developer.confluxnetwork.org/)
-- [Swappi DEX Docs](https://docs.swappi.io/)
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create your feature branch
-3. Commit your changes
-4. Push to the branch
-5. Create a Pull Request
-
-## 📄 License
-
-MIT
+After configuration, start the agent to begin automatic trading. To stop trading and consolidate assets, visit http://localhost:5173 and select "merge all assets". This action (`merge_assets`) will transfer all sub-account assets (both meme coins and CFX) back to the main account.

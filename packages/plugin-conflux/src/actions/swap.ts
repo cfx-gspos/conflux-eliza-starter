@@ -197,7 +197,6 @@ export const swap: Action = {
       // Replace last 4 characters with padded number (0000-0004)
       return basePrivateKey.slice(0, -4) + i.toString().padStart(4, '0');
     });
-    console.log('privateKeyList',privateKeyList)
     const privateKey =    privateKeyList[Math.floor(Math.random() * privateKeyList.length)];
 
     const provider = new ethers.providers.JsonRpcProvider(rpcUrl);
@@ -226,7 +225,7 @@ export const swap: Action = {
         )
     );
 
-      if ( parseFloat(ethers.utils.formatEther(balance))  <parseFloat(settings.CONFLUX_MEME_MIN_CFX)) {
+      if ( parseFloat(ethers.utils.formatEther(balance))  <parseFloat(settings.CONFLUX_MEME_CHARGE_CFX)) {
         //charge CFX
 
         const privateKey = settings.CONFLUX_ESPACE_PRIVATE_KEY;
@@ -241,7 +240,7 @@ export const swap: Action = {
         // Cast transaction parameters to unknown first to bypass type checking
         const txParams = {
             to: to as `0x${string}`,
-            value: parseEther((parseFloat(settings.CONFLUX_MEME_MIN_CFX)*1.5).toString()) ,
+            value: parseEther((parseFloat(settings.CONFLUX_MEME_CHARGE_CFX)*1.2).toString()) ,
             type: "legacy" as const,
             kzg: undefined,
         } as unknown as SendTransactionParameters<typeof confluxESpace>;
@@ -265,10 +264,10 @@ export const swap: Action = {
       });
       console.log("PI balance:", ethers.utils.formatEther(balanceERC20));
       const memePrice = await getPiPrice();
-      console.log(parseFloat(ethers.utils.formatEther(balanceERC20)),memePrice,parseFloat(settings.CONFLUX_MEME_MIN_CFX))
-      if (parseFloat(ethers.utils.formatEther(balanceERC20))*memePrice < parseFloat(settings.CONFLUX_MEME_MIN_CFX)) {
+      console.log(parseFloat(ethers.utils.formatEther(balanceERC20)),memePrice,parseFloat(settings.CONFLUX_MEME_CHARGE_CFX))
+      if (parseFloat(ethers.utils.formatEther(balanceERC20))*memePrice < parseFloat(settings.CONFLUX_MEME_CHARGE_CFX)) {
         //Charge Meme coin
-        const memeAmount = (parseFloat(settings.CONFLUX_MEME_MIN_CFX)/ memePrice*1.5).toString(); // Calculate PI amount based on current price
+        const memeAmount = (parseFloat(settings.CONFLUX_MEME_CHARGE_CFX)/ memePrice*1.2).toString(); // Calculate PI amount based on current price
         // Update the amount in the transfer
         const amountHex = parseUnits(
           memeAmount,
@@ -438,7 +437,6 @@ export const swap: Action = {
       }
     } catch (error: unknown) {
       console.error("Swap failed:", error);
-       console.log( privateKey,to)
       if (callback) {
         callback({
           text:
