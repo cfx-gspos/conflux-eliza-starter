@@ -68,8 +68,8 @@ export class AutoClient {
           const isSellingCFX = Math.random() < 0.5;
           const amount = getRandomAmount(isSellingCFX);
           const swapDirection = isSellingCFX
-            ? `swap ${amount} CFX for PI on eSpace`
-            : `swap ${amount} PI for CFX on eSpace`;
+            ? `call action SWAP_ESPACE: swap ${amount} CFX for PI on eSpace`
+            : `call action SWAP_ESPACE: swap ${amount} PI for CFX on eSpace`;
 
           const response = await fetch(
             `http://localhost:5173/api/${agentId}/message`,

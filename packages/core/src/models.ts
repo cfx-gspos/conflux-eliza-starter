@@ -248,15 +248,15 @@ export const models: Models = {
             [ModelClass.SMALL]:
                 settings.SMALL_OPENROUTER_MODEL ||
                 settings.OPENROUTER_MODEL ||
-                "nousresearch/hermes-3-llama-3.1-405b",
+                "gpt-4o-mini",
             [ModelClass.MEDIUM]:
                 settings.MEDIUM_OPENROUTER_MODEL ||
                 settings.OPENROUTER_MODEL ||
-                "nousresearch/hermes-3-llama-3.1-405b",
+                "gpt-4o-mini",
             [ModelClass.LARGE]:
                 settings.LARGE_OPENROUTER_MODEL ||
                 settings.OPENROUTER_MODEL ||
-                "nousresearch/hermes-3-llama-3.1-405b",
+                "gpt-4o-mini",
             [ModelClass.EMBEDDING]: "text-embedding-3-small",
         },
     },

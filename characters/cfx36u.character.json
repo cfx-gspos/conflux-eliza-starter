@@ -2,8 +2,8 @@
     "name": "cfx36u",
     "plugins": [],
     "clients": ["direct"],
-    "modelProvider": "openai",
- 
+    "modelProvider": "openrouter",
+
     "settings": {
         "model": "nous-hermes-llama-3b",
       "secrets": {},
