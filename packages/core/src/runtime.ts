@@ -547,23 +547,28 @@ export class AgentRuntime implements IAgentRuntime {
             if (!action) {
                 elizaLogger.info("Attempting to find action in similes.");
                 for (const _action of this.actions) {
-                    const simileAction = _action.similes.find(
-                        (simile) =>
-                            simile
-                                .toLowerCase()
-                                .replace("_", "")
-                                .includes(normalizedAction) ||
-                            normalizedAction.includes(
-                                simile.toLowerCase().replace("_", "")
-                            )
-                    );
-                    if (simileAction) {
-                        action = _action;
-                        elizaLogger.success(
-                            `Action found in similes: ${action.name}`
-                        );
-                        break;
+                    if(_action.similes==undefined){
+                        continue;
                     }
+                    console.log('_action.similes',_action.similes)
+                        const simileAction = _action.similes.find(
+                            (simile) =>
+                                simile
+                                    .toLowerCase()
+                                    .replace("_", "")
+                                    .includes(normalizedAction) ||
+                                normalizedAction.includes(
+                                    simile.toLowerCase().replace("_", "")
+                                )
+                        );
+                        if (simileAction) {
+                            action = _action;
+                            elizaLogger.success(
+                                `Action found in similes: ${action.name}`
+                            );
+                            break;
+                        }
+
                 }
             }
 

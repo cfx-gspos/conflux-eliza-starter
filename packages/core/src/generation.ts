@@ -597,6 +597,7 @@ export function trimTokens(
     maxTokens: number,
     model: TiktokenModel
 ): string {
+    return context
     if (!context) return "";
     if (maxTokens <= 0) throw new Error("maxTokens must be positive");
 

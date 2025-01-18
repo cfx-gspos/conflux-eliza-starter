@@ -6,11 +6,11 @@ export class AutoClient {
   settings: any;
 
   constructor(runtime: IAgentRuntime) {
-    this.runtime = runtime;
-    this.initAutoClient();
-    this.settings = Object.fromEntries(
-      Object.entries(process.env).filter(([key]) => key.startsWith("CONFLUX_"))
-    );
+    // this.runtime = runtime;
+    // this.initAutoClient();
+    // this.settings = Object.fromEntries(
+    //   Object.entries(process.env).filter(([key]) => key.startsWith("CONFLUX_"))
+    // );
   }
 
   private async getAgentId(): Promise<string> {
@@ -38,9 +38,9 @@ export class AutoClient {
       if (data.pairs && data.pairs[0] && data.pairs[0].priceNative) {
         return parseFloat(data.pairs[0].priceNative);
       }
-      throw new Error("Unable to fetch PI price");
+      throw new Error("Unable to fetch MEME price");
     } catch (error) {
-      console.error("Error fetching PI price:", error);
+      console.error("Error fetching MEME price:", error);
       return 0.0007; // Fallback price if API fails
     }
   }
@@ -68,8 +68,8 @@ export class AutoClient {
           const isSellingCFX = Math.random() < 0.5;
           const amount = getRandomAmount(isSellingCFX);
           const swapDirection = isSellingCFX
-            ? `call action SWAP_ESPACE: swap ${amount} CFX for PI on eSpace`
-            : `call action SWAP_ESPACE: swap ${amount} PI for CFX on eSpace`;
+            ? `call action SWAP_ESPACE: swap ${amount} CFX for MEME on eSpace`
+            : `call action SWAP_ESPACE: swap ${amount} MEME for CFX  on eSpace`;
 
           const response = await fetch(
             `http://localhost:5173/api/${agentId}/message`,
@@ -111,11 +111,11 @@ export class AutoClient {
         console.log(minMinutes, maxMinutes);
 
         // Schedule next execution
-        setTimeout(runAutoClient, delay);
+        // setTimeout(runAutoClient, delay);
       };
 
       // Start the first execution
-      runAutoClient();
+    //   runAutoClient();
     } catch (error) {
       elizaLogger.error("Failed to initialize auto client:", error);
     }
