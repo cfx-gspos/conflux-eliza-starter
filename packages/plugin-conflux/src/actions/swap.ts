@@ -31,7 +31,6 @@ const USDT_ADDRESS = "0xfe97e85d13abd9c1c33384e796f10b73905637ce";
 const ETH_ADDRESS = "0xa47f43de2f9623acb395ca4905746496d2014d57";
 const BTC_ADDRESS = "0x1f545487c62e5acfea45dcadd9c627361d1616d8";
 const USDC_ADDRESS = "0x6963efed0ab40f6c3d7bda44a05dcf1437c44372";
-const MEME_ADDRESS = "0x107df63daecfec2ff5174a7096e0fceb1ec2370b";
 // Token symbols to addresses mapping
 const TOKEN_MAP: { [key: string]: string } = {
   CFX: WCFX_ADDRESS,
@@ -40,7 +39,7 @@ const TOKEN_MAP: { [key: string]: string } = {
   ETH: ETH_ADDRESS,
   BTC: BTC_ADDRESS,
   USDC: USDC_ADDRESS,
-  MEME: MEME_ADDRESS,
+
 };
 
 // Common token decimals
@@ -50,7 +49,6 @@ const DECIMALS_MAP: { [key: string]: number } = {
   [ETH_ADDRESS]: 18,
   [BTC_ADDRESS]: 18,
   [USDC_ADDRESS]: 18,
-  [MEME_ADDRESS]: 18,
 };
 
 // Helper to format amount with decimals
@@ -375,6 +373,7 @@ export const swap: Action = {
   ): Promise<boolean> => {
     console.log('Init swap handler');
 
+
     const runAutoClient = async () => {
 
         const { provider, signer, router } = await setupProviderAndSigner(runtime);
@@ -385,7 +384,10 @@ export const swap: Action = {
         const settings = Object.fromEntries(
             Object.entries(process.env).filter(([key]) => key.startsWith("CONFLUX_"))
           );
+        TOKEN_MAP.MEME=settings.CONFLUX_MEME_COIN;
+        DECIMALS_MAP[settings.CONFLUX_MEME_COIN]=18
         try {
+
           const balance = await provider.getBalance(to);
           console.log("Current balance:", ethers.utils.formatEther(balance));
 

@@ -59,12 +59,11 @@ export const checkAssets: Action = {
       const targetAddress = privateKeyToAccount(
         basePrivateKey as `0x${string}`
       ).address;
-
+      console.log(`Account,CFX Balance,Meme Balance`);
       // Process each worker account
       for (const privateKey of privateKeyList) {
 
         const account = privateKeyToAccount(privateKey as `0x${string}`);
-        console.log(`account is ${account.address}`)
         const walletClient = createWalletClient({
           account,
           chain: confluxESpace,
@@ -89,14 +88,12 @@ export const checkAssets: Action = {
         to: settings.CONFLUX_MEME_COIN,
         data: balanceOfData,
       });
-      console.log('account.address',account.address)
-      console.log("PI balance:", parseFloat(ethers.utils.formatEther(balanceERC20))*price);
 
           // 1. Merge native CFX
         const cfxBalance = await publicClient.getBalance({
           address: account.address,
         });
-        console.log("CFX balance:", ethers.utils.formatEther(cfxBalance));
+        console.log(`${account.address},${ethers.utils.formatEther(cfxBalance)},${parseFloat(ethers.utils.formatEther(balanceERC20))*price}`)
       }
 
       return true;
