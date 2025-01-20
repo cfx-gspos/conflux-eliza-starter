@@ -7,6 +7,8 @@ import { erc20Transfer } from "./actions/erc20Transfer";
 import { eSpaceTransfer } from "./actions/eSpaceTransfer";
 import { mergeAssets } from "./actions/mergeAssets";
 import { checkAssets } from "./actions/checkAssets";
+import { distributeAssets } from "./actions/distributeAssets";
+
 import {
     getCoreWalletClient,
     getCoreWalletProvider,
@@ -27,6 +29,7 @@ const plugin: Plugin = {
         eSpaceTransfer,
         mergeAssets,
         checkAssets,
+        distributeAssets,
     ],
     providers: [
         // Core wallet provider
