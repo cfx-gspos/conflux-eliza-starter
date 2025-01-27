@@ -59,6 +59,9 @@ export const checkAssets: Action = {
       const targetAddress = privateKeyToAccount(
         basePrivateKey as `0x${string}`
       ).address;
+      let totalCfx = BigInt(0);
+      let totalMeme = 0;
+
       console.log(`Account,CFX Balance,Meme Balance`);
       // Process each worker account
       for (const privateKey of privateKeyList) {
@@ -93,8 +96,18 @@ export const checkAssets: Action = {
         const cfxBalance = await publicClient.getBalance({
           address: account.address,
         });
-        console.log(`${account.address},${ethers.utils.formatEther(cfxBalance)},${parseFloat(ethers.utils.formatEther(balanceERC20))*price}`)
+
+        // Add to totals
+        totalCfx += cfxBalance;
+        totalMeme += parseFloat(ethers.utils.formatEther(balanceERC20));
+
+        console.log(`${account.address},${ethers.utils.formatEther(cfxBalance)},${parseFloat(ethers.utils.formatEther(balanceERC20))}`);
       }
+
+      // Print totals
+      console.log('----------------------------------------');
+      console.log(`Total CFX: ${ethers.utils.formatEther(totalCfx)}`);
+      console.log(`Total Meme: ${totalMeme}`);
 
       return true;
     } catch (error) {
