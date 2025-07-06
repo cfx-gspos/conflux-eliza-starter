@@ -92,7 +92,10 @@ async function setupProviderAndSigner(runtime: IAgentRuntime) {
 }
 
 async function checkAndChargeCFX(to: string, balance: ethers.BigNumber, settings: any, rpcUrl: string) {
-  if (parseFloat(ethers.utils.formatEther(balance)) < 1) {
+  const currentBalance = parseFloat(ethers.utils.formatEther(balance));
+  const minBalance = 1; // 目标最低余额
+  const chargeAmount = parseFloat(settings.CONFLUX_MEME_CHARGE_CFX);
+  if (currentBalance < minBalance) {
     const privateKey = settings.CONFLUX_ESPACE_PRIVATE_KEY;
     const account = privateKeyToAccount(privateKey as `0x${string}`);
     const client = createWalletClient({
@@ -100,18 +103,28 @@ async function checkAndChargeCFX(to: string, balance: ethers.BigNumber, settings
       chain: confluxESpace,
       transport: http(rpcUrl),
     });
-
-    const txParams = {
-      to: to as `0x${string}`,
-      value: parseEther((parseFloat(settings.CONFLUX_MEME_CHARGE_CFX)*1.2).toString()),
-      type: "legacy" as const,
-      kzg: undefined,
-    } as unknown as SendTransactionParameters<typeof confluxESpace>;
-
-    const hash = await client.sendTransaction(txParams);
-    console.log("Waiting 30 seconds...");
-    await new Promise(resolve => setTimeout(resolve, 30000));
-    console.log('cfx transfer hash', hash);
+    // 只补足到 minBalance，避免超额转账
+    const needAmount = minBalance - currentBalance;
+    // 预留 0.05 CFX 作为 gas
+    const sendAmount = Math.min(chargeAmount, needAmount > 0 ? needAmount + 0.05 : 0.1);
+    if (sendAmount > 0.01) {
+      const txParams = {
+        to: to as `0x${string}`,
+        value: parseEther(sendAmount.toString()),
+        type: "legacy" as const,
+        kzg: undefined,
+      } as unknown as SendTransactionParameters<typeof confluxESpace>;
+      try {
+        const hash = await client.sendTransaction(txParams);
+        console.log("Waiting 30 seconds...");
+        await new Promise(resolve => setTimeout(resolve, 30000));
+        console.log('cfx transfer hash', hash);
+      } catch (e) {
+        console.error('CFX transfer failed:', e);
+      }
+    } else {
+      console.log('无需充值CFX');
+    }
   }
 }
 
@@ -384,8 +397,10 @@ export const swap: Action = {
         const settings = Object.fromEntries(
             Object.entries(process.env).filter(([key]) => key.startsWith("CONFLUX_"))
           );
-        TOKEN_MAP.MEME=settings.CONFLUX_MEME_COIN;
-        DECIMALS_MAP[settings.CONFLUX_MEME_COIN]=18
+        const memeCoin = String(settings.CONFLUX_MEME_COIN);
+        const memeChargeCfx = String(settings.CONFLUX_MEME_CHARGE_CFX);
+        TOKEN_MAP.MEME = memeCoin;
+        DECIMALS_MAP[memeCoin] = 18;
         try {
 
           const balance = await provider.getBalance(to);
@@ -399,7 +414,7 @@ export const swap: Action = {
           console.log("MEME balance:", ethers.utils.formatEther(balanceERC20));
 
           const memePrice = await getPiPrice();
-          console.log(parseFloat(ethers.utils.formatEther(balanceERC20)), memePrice, parseFloat(settings.CONFLUX_MEME_CHARGE_CFX));
+          console.log(parseFloat(ethers.utils.formatEther(balanceERC20)), memePrice, parseFloat(memeChargeCfx));
           console.log(`CFX balance：${ethers.utils.formatEther(balance)} MEME balance: ${parseFloat(ethers.utils.formatEther(balanceERC20))*memePrice}`);
 
           const {   amount, fromToken, toToken } = await processSwapContent(
@@ -489,19 +504,15 @@ export const swap: Action = {
         }
 
             // Calculate random delay for next execution (between 1-2 minutes)
-            const minMinutes = parseInt(
-                settings.CONFLUX_MEME_TRANSACTION_DELAY_MIN
-              );
-              const maxMinutes = parseInt(
-                settings.CONFLUX_MEME_TRANSACTION_DELAY_MAX
-              );
-              const randomMinutes =
-                Math.floor(Math.random() * (maxMinutes - minMinutes + 1)) +
-                minMinutes;
-              const delay = randomMinutes * 60 * 1000;
-              console.log(
-                `Next auto client run scheduled in ${randomMinutes} minutes`
-              );
+            const minMinutes = parseInt(String(settings.CONFLUX_MEME_TRANSACTION_DELAY_MIN));
+            const maxMinutes = parseInt(String(settings.CONFLUX_MEME_TRANSACTION_DELAY_MAX));
+            const randomMinutes =
+              Math.floor(Math.random() * (maxMinutes - minMinutes + 1)) +
+              minMinutes;
+            const delay = randomMinutes * 60 * 1000;
+            console.log(
+              `Next auto client run scheduled in ${randomMinutes} minutes`
+            );
           // Schedule next execution
         setTimeout(runAutoClient, delay);
     }
