@@ -95,6 +95,9 @@ async function checkAndChargeCFX(to: string, balance: ethers.BigNumber, settings
   const currentBalance = parseFloat(ethers.utils.formatEther(balance));
   const minBalance = 1; // 目标最低余额
   const chargeAmount = parseFloat(settings.CONFLUX_MEME_CHARGE_CFX);
+
+  console.log(`当前CFX余额: ${currentBalance}, 最低余额要求: ${minBalance}`);
+
   if (currentBalance < minBalance) {
     const privateKey = settings.CONFLUX_ESPACE_PRIVATE_KEY;
     const account = privateKeyToAccount(privateKey as `0x${string}`);
@@ -103,10 +106,24 @@ async function checkAndChargeCFX(to: string, balance: ethers.BigNumber, settings
       chain: confluxESpace,
       transport: http(rpcUrl),
     });
+
+    // 检查主账户CFX余额
+    const provider = new ethers.providers.JsonRpcProvider(rpcUrl);
+    const mainAccountBalance = await provider.getBalance(account.address);
+    const mainAccountCfxBalance = parseFloat(ethers.utils.formatEther(mainAccountBalance));
+
     // 只补足到 minBalance，避免超额转账
     const needAmount = minBalance - currentBalance;
     // 预留 0.05 CFX 作为 gas
     const sendAmount = Math.min(chargeAmount, needAmount > 0 ? needAmount + 0.05 : 0.1);
+
+    console.log(`需要转账CFX: ${sendAmount}, 主账户余额: ${mainAccountCfxBalance}`);
+
+    if (mainAccountCfxBalance < sendAmount + 0.1) { // 预留gas费
+      console.log(`主账户CFX余额不足，跳过转账。当前余额: ${mainAccountCfxBalance}, 需要: ${sendAmount + 0.1}`);
+      return;
+    }
+
     if (sendAmount > 0.01) {
       const txParams = {
         to: to as `0x${string}`,
@@ -120,11 +137,14 @@ async function checkAndChargeCFX(to: string, balance: ethers.BigNumber, settings
         await new Promise(resolve => setTimeout(resolve, 30000));
         console.log('cfx transfer hash', hash);
       } catch (e) {
-        console.error('CFX transfer failed:', e);
+        console.error('CFX转账失败:', e);
+        // 转账失败时不抛出错误，继续执行
       }
     } else {
       console.log('无需充值CFX');
     }
+  } else {
+    console.log('CFX余额充足，无需充值');
   }
 }
 
@@ -146,7 +166,6 @@ async function checkAndChargeMeme(
 ) {
   if (parseFloat(ethers.utils.formatEther(balanceERC20))*memePrice < 1) {
     const memeAmount = (parseFloat(settings.CONFLUX_MEME_CHARGE_CFX)/ memePrice*1.2).toString();
-    const amountHex = parseUnits(memeAmount, 18).toString(16).padStart(64, "0");
 
     const privateKey = settings.CONFLUX_ESPACE_PRIVATE_KEY;
     const account = privateKeyToAccount(privateKey as `0x${string}`);
@@ -156,19 +175,38 @@ async function checkAndChargeMeme(
       transport: http(rpcUrl),
     });
 
+    // 首先检查主账户的MEME余额
+    const provider = new ethers.providers.JsonRpcProvider(rpcUrl);
+    const mainAccountBalance = await getMemeBalance(provider, account.address, settings);
+    const mainAccountMemeBalance = parseFloat(ethers.utils.formatEther(mainAccountBalance));
+
+    console.log(`主账户MEME余额: ${mainAccountMemeBalance}, 需要转账: ${memeAmount}`);
+
+    // 如果主账户余额不足，跳过转账
+    if (mainAccountMemeBalance < parseFloat(memeAmount)) {
+      console.log(`主账户MEME余额不足，跳过转账。当前余额: ${mainAccountMemeBalance}, 需要: ${memeAmount}`);
+      return;
+    }
+
+    const amountHex = parseUnits(memeAmount, 18).toString(16).padStart(64, "0");
     const transferFunctionSignature = "a9059cbb";
     const cleanTo = to.toLowerCase().replace("0x", "");
     const data = `0x${transferFunctionSignature}${"000000000000000000000000"}${cleanTo}${amountHex}`;
 
-    const hash = await client.sendTransaction({
-      to: settings.CONFLUX_MEME_COIN,
-      data: data as `0x${string}`,
-      type: "legacy" as const,
-    } as unknown as SendTransactionParameters<typeof confluxESpace>);
+    try {
+      const hash = await client.sendTransaction({
+        to: settings.CONFLUX_MEME_COIN,
+        data: data as `0x${string}`,
+        type: "legacy" as const,
+      } as unknown as SendTransactionParameters<typeof confluxESpace>);
 
-    console.log("Waiting 30 seconds...");
-    await new Promise(resolve => setTimeout(resolve, 30000));
-    console.log('erc20 transfer hash', hash);
+      console.log("Waiting 30 seconds...");
+      await new Promise(resolve => setTimeout(resolve, 30000));
+      console.log('erc20 transfer hash', hash);
+    } catch (error) {
+      console.error('MEME转账失败:', error);
+      // 转账失败时不抛出错误，继续执行
+    }
   }
 }
 
@@ -215,15 +253,34 @@ const min = 0.6;
 const max = 0.9;
 const range = max - min;
 const changeRange=parseFloat((Math.random() * range + min).toFixed(4))
-  if (parseFloat(ethers.utils.formatEther(balance)) >= parseFloat(ethers.utils.formatEther(balanceERC20))*memePrice ) {
-    amount = parseFloat(ethers.utils.formatEther(balance))*changeRange;
-    fromToken =  "CFX";
-    toToken =  "MEME";
-  }else{
-    amount = parseFloat(ethers.utils.formatEther(balanceERC20))*changeRange;
-    fromToken =  "MEME";
-    toToken =  "CFX";
-  }
+
+const cfxBalance = parseFloat(ethers.utils.formatEther(balance));
+const memeBalance = parseFloat(ethers.utils.formatEther(balanceERC20));
+const memeValueInCfx = memeBalance * memePrice;
+
+console.log(`CFX余额: ${cfxBalance}, MEME余额: ${memeBalance}, MEME价值(CFX): ${memeValueInCfx}`);
+
+if (cfxBalance >= memeValueInCfx) {
+  // CFX价值更高，卖出CFX买入MEME
+  const maxCfxToSell = Math.max(0, cfxBalance - 0.2); // 预留0.2 CFX作为gas费
+  amount = maxCfxToSell * changeRange;
+  fromToken = "CFX";
+  toToken = "MEME";
+} else {
+  // MEME价值更高，卖出MEME买入CFX
+  const maxMemeToSell = memeBalance * 0.95; // 预留5%作为缓冲
+  amount = maxMemeToSell * changeRange;
+  fromToken = "MEME";
+  toToken = "CFX";
+}
+
+// 确保交换金额不为0或负数
+if (amount <= 0) {
+  console.log("计算的交换金额为0或负数，跳过交换");
+  amount = 0;
+}
+
+console.log(`决定交换: ${amount} ${fromToken} -> ${toToken}`);
 
 //   if (parseFloat(ethers.utils.formatEther(balance)) < parseFloat(ethers.utils.formatEther(balanceERC20))*memePrice
 //       && swapContent.params.fromToken=="CFX") {
@@ -406,8 +463,6 @@ export const swap: Action = {
           const balance = await provider.getBalance(to);
           console.log("Current balance:", ethers.utils.formatEther(balance));
 
-
-
           await checkAndChargeCFX(to, balance, settings, runtime.getSetting("CONFLUX_ESPACE_RPC_URL"));
 
           const balanceERC20 = await getMemeBalance(provider, to, settings);
@@ -417,16 +472,30 @@ export const swap: Action = {
           console.log(parseFloat(ethers.utils.formatEther(balanceERC20)), memePrice, parseFloat(memeChargeCfx));
           console.log(`CFX balance：${ethers.utils.formatEther(balance)} MEME balance: ${parseFloat(ethers.utils.formatEther(balanceERC20))*memePrice}`);
 
+          await checkAndChargeMeme(to, balanceERC20, settings, runtime.getSetting("CONFLUX_ESPACE_RPC_URL"), memePrice);
+
+          // 重新获取余额，因为可能已经充值
+          const updatedBalance = await provider.getBalance(to);
+          const updatedBalanceERC20 = await getMemeBalance(provider, to, settings);
+
+          console.log("Updated CFX balance:", ethers.utils.formatEther(updatedBalance));
+          console.log("Updated MEME balance:", ethers.utils.formatEther(updatedBalanceERC20));
+
           const {   amount, fromToken, toToken } = await processSwapContent(
             runtime,
             initialMessage,
             initialState,
-            balance,
-            balanceERC20,
+            updatedBalance,
+            updatedBalanceERC20,
             memePrice
           );
           console.log('swapContent, amount, fromToken, toToken ',  amount, fromToken, toToken )
 
+          // 如果交换金额为0，跳过交换
+          if (amount <= 0) {
+            console.log("交换金额为0，跳过本次交换");
+            return;
+          }
 
           const tokenIn = TOKEN_MAP[fromToken] || WCFX_ADDRESS;
           const tokenOut = TOKEN_MAP[toToken] || USDT_ADDRESS;
@@ -442,7 +511,20 @@ export const swap: Action = {
           const amountIn = parseAmount(amount, decimalsIn);
           const path = [tokenIn, tokenOut];
 
-          await checkAndChargeMeme(to, balanceERC20, settings, runtime.getSetting("CONFLUX_ESPACE_RPC_URL"), memePrice);
+          // 检查是否有足够的余额进行交换
+          if (fromToken === "CFX") {
+            const cfxBalance = parseFloat(ethers.utils.formatEther(updatedBalance));
+            if (cfxBalance < amount + 0.1) { // 预留gas费
+              console.log(`CFX余额不足进行交换。当前余额: ${cfxBalance}, 需要: ${amount + 0.1}`);
+              return;
+            }
+          } else if (fromToken === "MEME") {
+            const memeBalance = parseFloat(ethers.utils.formatEther(updatedBalanceERC20));
+            if (memeBalance < amount) {
+              console.log(`MEME余额不足进行交换。当前余额: ${memeBalance}, 需要: ${amount}`);
+              return;
+            }
+          }
 
           const feeData = await provider.getFeeData();
           const maxFeePerGas = feeData.maxFeePerGas || feeData.gasPrice;
